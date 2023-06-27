@@ -1,0 +1,34 @@
+{% extends "index.html" %} {% block content %}
+
+  <section>
+    <div class="form-box">
+      <div class="form-value">
+        <form action="">
+          <h2>Recuperar Contraseña</h2>
+          <div class="inputbox">
+            <ion-icon name="mail-outline"></ion-icon>
+            <input type="email" required />
+            <label for="">E-mail</label>
+          </div>
+          <div id="error-message"></div>
+          <button>Enviar correo de recuperación</button>
+          <div class="register">
+            <p>
+              No tienes una cuenta <a href="{{ url_for('registrar') }}">Registrarse</a>
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+<script
+  type="module"
+  src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+></script>
+<script
+  nomodule
+  src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+></script>
+
+{% endblock %}

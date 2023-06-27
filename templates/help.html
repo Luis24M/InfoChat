@@ -1,0 +1,66 @@
+{% extends 'inicio.html' %} {% block content %}
+<link rel="stylesheet" href="/static/css/styleHelp.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+<script src="/static/js/scriptComment.js" defer></script>
+
+<main>
+  <h1>Ayuda</h1>
+  <section>
+    <h2>¿Cómo utilizar el chat?</h2>
+    <h3>Iniciar la conversación:</h3>
+    <ul>
+      <li>
+        Para comenzar, simplemente escribe tu mensaje en el cuadro de chat y
+        presiona "Enviar".
+      </li>
+      <li>Puedes empezar con un saludo o una pregunta directa.</li>
+    </ul>
+    <h3>Pregunta clara y concisa:</h3>
+    <ul>
+      <li>
+        Formula tus preguntas de manera clara y concisa para obtener los mejores
+        resultados.
+      </li>
+      <li>
+        Evita mensajes largos y ambiguos, ya que esto puede dificultar la
+        comprensión del chatbot.
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>Campos cubiertos por el chatbot</h2>
+    <h3>Información administrativa:</h3>
+    <ul>
+      <li>
+        Información sobre registros estudiantiles y procedimientos de matrícula.
+      </li>
+      <li>Políticas y regulaciones académicas.</li>
+      <li>Calendario académico y fechas importantes.</li>
+      <li>Procesos de transferencia y convalidación de créditos.</li>
+    </ul>
+    <h3>Información académica:</h3>
+    <ul>
+      <li>Programas de estudio y carreras ofrecidas por la universidad.</li>
+      <li>Requisitos de admisión y procesos de solicitud.</li>
+      <li>Planes de estudio.</li>
+    </ul>
+    <h3>Soporte técnico:</h3>
+    <ul>
+      <li>Asistencia con el acceso a plataformas y sistemas en línea.</li>
+      <li>
+        Solución de problemas técnicos relacionados con el uso de recursos
+        digitales.
+      </li>
+      <li>Orientación sobre el uso de herramientas y software específicos.</li>
+    </ul>
+  </section>
+  <section>
+    <h2>Dejar una queja o comentario</h2>
+    <form id="comment-form" action="submit_comment.php" method="post">
+      <textarea id="comment-input" name="comment" rows="4" placeholder="Escribe tu queja o comentario aquí"></textarea>
+      <button type="submit">Enviar</button>
+    </form>
+  </section>
+</main>
+
+{% endblock %}

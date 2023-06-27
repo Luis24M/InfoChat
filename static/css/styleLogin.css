@@ -1,0 +1,75 @@
+main {
+  max-width: 1000px;
+  height: 90vh;
+  margin: 20px auto;
+  padding: 20px;
+  padding-left: 110px;
+}
+
+form {
+  max-width: 400px;
+  margin: 20% auto;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button[type="submit"]:hover {
+  background-color: #0f5cae;
+}
+.olvida-contraseña {
+  width: 100%;
+}
+.olvida-contraseña:hover{
+    color: #0f5cae;
+    text-decoration: none;
+    background-color: #fff;
+}
+.registro {
+  color: #007bff;
+  text-decoration: none;
+  width: 100%;
+  font-size: 14px;
+  text-align: center;
+  display: block;
+  margin-top: 20px;
+  margin-right: 0;
+}
+.registro:hover{
+    color: #0f5cae;
+    text-decoration: none;
+    background-color: #fff;
+}

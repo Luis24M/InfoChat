@@ -1,0 +1,47 @@
+{% extends 'index.html'%}
+
+{% block content %}
+<script src="/static/js/scriptLogin.js" defer></script>
+<section>
+  <div class="form-box" id="login-form">
+    <div class="form-value">
+      <form action="">
+        <h2>Iniciar Sesión</h2>
+        <div class="inputbox">
+          <ion-icon name="mail-outline"></ion-icon>
+          <input type="text" required />
+          <label for="">E-mail o Nombre de Usuario</label>
+        </div>
+        <div class="inputbox">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+          <input type="password" required />
+          <label for="">Password</label>
+        </div>
+        <div class="forget">
+          <label for="">
+            <a href="{{ url_for('recuperar') }}"
+              >¿Olvidaste tu contraseña?</a
+            ></label
+          >
+        </div>
+        <div id="error-message"></div>
+        <button>Iniciar Sesión</button>
+        <div class="register">
+          <p>No tienes una cuenta <a href="{{ url_for('registrar')}}">Registrarse</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+<script
+  type="module"
+  src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+></script>
+<script
+  nomodule
+  src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+{% endblock %}

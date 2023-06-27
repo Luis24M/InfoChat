@@ -1,0 +1,84 @@
+main {
+  max-width: 1000px;
+  height: 100%;
+  margin: 20px auto;
+  padding: 20px;
+  padding-left: 110px;
+}
+h1 {
+  margin-bottom: 20px;
+}
+
+section {
+  margin-bottom: 20px;
+}
+
+section h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+section h3 {
+  margin-bottom: 10px;
+  padding-left: 3%;
+}
+
+section p {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+section form {
+  margin-top: 10px;
+}
+
+section form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+section form input[type="text"],
+section form input[type="email"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+section form button[type="submit"] {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+section form button[type="submit"]:hover {
+  background-color: #0069d9;
+}
+
+section ul {
+  position: static;
+  /* list-style-type: none; */
+  font-size: 16px;
+  line-height: 1.5;
+  padding-left: 10%;
+  margin-bottom: 10px;
+}
+.contact{
+    list-style-type: none;
+}
+section ul li {
+  margin-bottom: 10px;
+}
+
+section ul li i {
+  margin-right: 10px;
+}

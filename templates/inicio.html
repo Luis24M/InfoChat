@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/static/images/icono2.png" type="image/x-icon" />
+    <title>InfoChat</title>
+    <link rel="stylesheet" href="/static/css/navbar.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li>
+                    <a href="{{ url_for('chat') }}"  class="logo">
+                    <img src="/static/images/logo.jpg" alt="logo InfoChat">
+                    <span class="nav-title">InfoChat</span>
+                    </a>
+                </li>
+                <li><a href="{{ url_for('contacto') }}">
+                    <i class="fas fa-address-card"></i>
+                    <span class="nav-item">Contacto</span>
+                </a>
+                <li><a href="{{ url_for('ayuda')}}" class="foot">
+                    <i class="fas fa-question-circle"></i>
+                    <span class="nav-item">Ayuda</span>
+                </a>
+                </li>
+                <li><a href="{{ url_for('logout') }}" class="foot">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="nav-item">Logout</span>
+                </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    {% block content %}
+
+    {% endblock %}
+</body>
+</html>

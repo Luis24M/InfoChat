@@ -1,0 +1,48 @@
+{% extends 'index.html' %} {% block content %}
+<script src="/static/js/scriptRegister.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<section>
+  <div class="form-box" id="register-form">
+    <div class="form-value">
+      <form action="">
+        <h2>Registrarse</h2>
+        <div class="inputbox">
+          <ion-icon name="person-outline"></ion-icon>
+          <input type="username" required />
+          <label for="">Nombre de Usuario</label>
+        </div>
+        <div class="inputbox">
+          <ion-icon name="mail-outline"></ion-icon>
+          <input type="email" required />
+          <label for="">E-mail</label>
+        </div>
+        <div class="inputbox">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+          <input type="password" required />
+          <label for="">Contraseña</label>
+        </div>
+        <div class="inputbox">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+          <input type="password" name="confirm-password" required />
+          <label for="">Confirmar Contraseña</label>
+        </div>
+        <div id="error-message"></div>
+        <button>Registrarse</button>
+        <div class="register">
+            <p>Ya tienes una cuenta <a href="{{ url_for('index')}}">Iniciar Sesión</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script
+  type="module"
+  src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+></script>
+<script
+  nomodule
+  src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+></script>
+
+{% endblock %}
