@@ -22,9 +22,7 @@ import os
 app = Flask(__name__)
 app.secret_key = 'clave_secreta'
 CORS(app)
-UPLOAD_FOLDER = '/uploads'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
 
 
 
