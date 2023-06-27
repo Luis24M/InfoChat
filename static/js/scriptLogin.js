@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const password = passwordInput.value;
 
     try {
-      const response = await axios.post('http://127.0.0.1:5000/login', { username_or_email: email, password });
+      const response = await axios.post('/login', { username_or_email: email, password });
 
       if (response.data.message === 'Login successful') {
         // Guardar el token de autenticación en el cliente (por ejemplo, en localStorage)

@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
       }
   
       try {
-        const response = await axios.post('http://127.0.0.1:5000/register', {
+        const response = await axios.post('/register', {
           username,
           email,
           password
