@@ -19,6 +19,12 @@ import ssl
 import openai
 import os
 
+from dotenv import load_dotenv
+
+# Cargar variables de entorno desde el archivo .env
+load_dotenv()
+
+
 # Se inicializa la app 
 app = Flask(__name__)
 app.secret_key = 'clave_secreta'
@@ -212,12 +218,14 @@ def get_text_chunks(text):
     return chunks
 
 def get_vectorstore(text_chunks):
-    embeddings = OpenAIEmbeddings( openai_api_key="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")
+    # tengo mi api_key en un archivo .env variable
+    embeddings = OpenAIEmbeddings(openai_api_key=os.getenv('API_KEY'))
+    #embeddings = OpenAIEmbeddings()
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
 def get_conversation_chain(vectorstore):
-    llm = ChatOpenAI()
+    llm = ChatOpenAI(openai_api_key=os.getenv('API_KEY'))
     memory = ConversationBufferMemory(
         memory_key='chat_history',
         return_messages=True
