@@ -13,24 +13,28 @@
             <ul>
                 <li>
                     <a href="{{ url_for('chat') }}"  class="logo">
-                    <img src="/static/images/logo.jpg" alt="logo InfoChat">
-                    <span class="nav-title">InfoChat</span>
+                        <img src="/static/images/logo.jpg" alt="logo InfoChat">
+                        <span class="nav-title">InfoChat</span>
                     </a>
                 </li>
                 <li><a href="{{ url_for('contacto') }}">
                     <i class="fas fa-address-card"></i>
                     <span class="nav-item">Contacto</span>
-                </a>
+                </a></li>
                 <li><a href="{{ url_for('ayuda')}}" class="foot">
                     <i class="fas fa-question-circle"></i>
                     <span class="nav-item">Ayuda</span>
-                </a>
-                </li>
+                </a></li>
+                {% if session['role'] == 'admin' %}
+                <li><a href="{{ url_for('admin_dashboard')}}" class="foot">
+                    <i class="fas fa-user-cog"></i>
+                    <span class="nav-item">Dashboard</span>
+                </a></li>
+                {% endif %}
                 <li><a href="{{ url_for('logout') }}" class="foot">
                     <i class="fas fa-sign-out-alt"></i>
                     <span class="nav-item">Logout</span>
-                </a>
-                </li>
+                </a></li>
             </ul>
         </nav>
     </header>

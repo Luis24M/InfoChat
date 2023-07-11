@@ -1,0 +1,43 @@
+.admin-section {
+    margin: 50px 150px;
+}
+
+.admin-section h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.admin-section h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.admin-section form {
+    margin-bottom: 20px;
+}
+
+.admin-section input[type="file"] {
+    margin-bottom: 10px;
+}
+
+.admin-section select {
+    margin-bottom: 10px;
+}
+
+.admin-section button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.admin-section button:hover {
+    background-color: #45a049;
+}
+
+.pdf-name{
+    width: 100%;
+    margin: 20px;
+}

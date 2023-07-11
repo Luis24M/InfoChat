@@ -1,0 +1,43 @@
+{% extends 'inicio.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="/static/css/admin_dashboard.css">
+<link rel="icon" href="/static/images/icono2.png" type="image/x-icon" />
+
+<div class="admin-section">
+    <h2>Administración</h2>
+    
+    <h3>Subir PDFs</h3>
+    <form action="{{ url_for('upload_pdf') }}" method="post" enctype="multipart/form-data">
+        <div class="pdf-name">
+            <label for="pdf-name">Nombre del PDF: </label>
+            <input type="text" name="pdf_name" id="pdf-name" required>
+        </div>
+        <input type="file" name="pdf_file" accept=".pdf" required>
+        <button type="submit">Subir</button>
+        
+    </form>
+    <form action="{{ url_for('reload_chatbot') }}" method="post">
+        <button type="submit">Recargar Chatbot</button>
+    </form>
+    
+    <h3>Asignar Roles a Usuarios</h3>
+    <form action="{{ url_for('assign_role') }}" method="post">
+        <select name="user_id" required>
+            {% for user in users %}
+            <option value="{{ user._id }}">{{ user.username }}</option>
+            {% endfor %}
+        </select>
+        
+        <select name="role" required>
+            <option value="admin">Administrador</option>
+            <option value="user">Usuario</option>
+        </select>
+        
+        <button type="submit">Asignar Rol</button>
+    </form>
+    <h3>Gestionar PDFs</h3>
+
+    <a href="{{ url_for('download_pdf', filename='example.pdf') }}">Descargar PDF</a>
+</div>
+{% endblock %}

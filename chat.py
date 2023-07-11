@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request, jsonify, Response, session, url_for
+from flask import Flask, redirect, render_template, request, jsonify, Response, session, url_for, send_from_directory
 from flask_login import current_user
 from functools import wraps
 from flask_mail import Mail, Message
@@ -6,6 +6,9 @@ from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash # Para encriptar contraseñas
 from flask_cors import CORS
 from bson import json_util, ObjectId
+from dotenv import load_dotenv
+from werkzeug.utils import secure_filename
+from bson.objectid import ObjectId
 # chatbot
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
@@ -19,7 +22,6 @@ import ssl
 import openai
 import os
 
-from dotenv import load_dotenv
 
 # Cargar variables de entorno desde el archivo .env
 load_dotenv()
@@ -29,8 +31,6 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = 'clave_secreta'
 CORS(app)
-
-
 
 
 # Conexion Base de Datos 
@@ -53,6 +53,9 @@ app.config['MAIL_USERNAME'] = 'infochatunt@gmail.com'
 app.config['MAIL_PASSWORD'] = 'rnuwpvlavldtjhnm'
 mail = Mail(app)
 
+app.config['UPLOAD_FOLDER'] = 'static/uploads'  # Ruta de la carpeta "uploads"
+
+
 # ============================================ Usuario ==========================================================
 
 # Registrar nuevo usuario
@@ -73,14 +76,16 @@ def register():
         user_data = {
             'username': username,
             'email': email,
-            'password': hashed_password
+            'password': hashed_password,
+            'role': 'user'
         }
         result = user_collection.insert_one(user_data)
         user_id = str(result.inserted_id)
         response = {
             'id': user_id,
             'username': username,
-            'email': email
+            'email': email,
+            'role': 'user' 
         }
 
         return jsonify(response)
@@ -131,6 +136,7 @@ def login_user():
             session['user_id'] = str(user['_id'])
             session['username'] = str(user['username'])
             session['email'] = str(user['email'])
+            session['role'] = str(user['role'])
 
         else:
             response = {'message': 'Invalid username/email or password'}
@@ -152,6 +158,19 @@ def login_required(route_function):
     
     return decorated_function
 
+# Decorador para verificar si el usuario es administrador
+def admin_required(route_function):
+    @wraps(route_function)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' in session and session['role'] == 'admin':
+            # Usuario autenticado y es administrador, continuar con la ruta
+            return route_function(*args, **kwargs)
+        else:
+            # Usuario no autenticado o no es administrador, redirigir a una página de acceso denegado
+            return redirect(url_for('access_denied'))
+    
+    return decorated_function
+
 
 # =============================================================================================================================
 
@@ -169,35 +188,6 @@ def not_found(error=None):
 # ===========================================================================================================================
 
 # ========================================================== ChatBot ========================================================
-# Configuracion de Chatbot
-# openai.api_key = os.environ['API_KEY']
-# context = {"role": "system", "content": "Eres un asistente muy útil llamado InfoChat, para la  escuela de informatica de la Universidad nacional de Trujillo."}
-# messages = [context]
-
-# # Ruta para el chatbot
-# @app.route("/chat", methods=["POST"])
-# def chat():
-#     data = request.get_json()
-#     query = data["query"]
-
-#     messages.append({"role": "user", "content": query})
-
-#     response = openai.ChatCompletion.create(
-#         model="gpt-3.5-turbo-0613",
-#         messages=messages
-#     )
-
-#     response_content = response.choices[0].message.content
-
-#     messages.append({"role": "assistant", "content": response_content})
-
-#     response = {    
-#         "message": response_content
-#     }
-
-#     return jsonify(response)
-
-# # Fin de configuracion de Chatbot
 
 def get_pdf_text(pdf_docs):
     text = ""
@@ -225,7 +215,9 @@ def get_vectorstore(text_chunks):
     return vectorstore
 
 def get_conversation_chain(vectorstore):
-    llm = ChatOpenAI(openai_api_key=os.getenv('API_KEY'))
+    llm = ChatOpenAI(openai_api_key=os.getenv('API_KEY'),
+                     temperature=0.1,)
+    print(llm.temperature)
     memory = ConversationBufferMemory(
         memory_key='chat_history',
         return_messages=True
@@ -237,12 +229,17 @@ def get_conversation_chain(vectorstore):
     )
     return conversation_chain
 
-pdf_docs = ["uploads/Información extra.pdf",
-            "uploads/REGLAMENTO PARA SUSTENTACION DE TESIS (ACTUAL).pdf",
-            "uploads/Soporte_tecnico.pdf",
-            "uploads/Informacion_Administrativa.pdf",
-            "uploads/Informacion_Academica.pdf"]
+# La lista debe contener los nombres de los archivos PDF que se encuentran en la carpeta "statics/uploads"
+# Cargar de manera automatica los pdfs de static/uploads a pdf_docs
+def cargar_pdfs():
+    global pdf_docs
+    pdf_docs = []
+    for file in os.listdir(app.config['UPLOAD_FOLDER']):
+        if file.endswith('.pdf'):
+            pdf_docs.append(os.path.join(app.config['UPLOAD_FOLDER'], file))
+
 def run_chatbot():
+    cargar_pdfs()
     text = get_pdf_text(pdf_docs)
     text_chunks = get_text_chunks(text)
     vectorstore = get_vectorstore(text_chunks)
@@ -250,6 +247,16 @@ def run_chatbot():
     return conversation_chain
 
 conversation_chain = run_chatbot()
+
+def recargar_chatbot():
+    global conversation_chain
+    conversation_chain = run_chatbot()
+    
+@app.route('/reload_chatbot', methods=['POST'])
+@admin_required
+def reload_chatbot():
+    recargar_chatbot()
+    return redirect(url_for('admin_dashboard'))
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -311,6 +318,69 @@ El equipo de InfoChat'''
 
 # =================================================================================================================
 
+
+# =================================================== PDF =========================================================
+# Ruta para subir PDFs
+@app.route('/upload_pdf', methods=['POST'])
+@admin_required
+def upload_pdf():
+    if 'pdf_file' not in request.files:
+        return jsonify({'message': 'No file selected'}), 400
+    
+    pdf_file = request.files['pdf_file']
+    if pdf_file.filename == '':
+        return jsonify({'message': 'No file selected'}), 400
+    
+    # Guardar el archivo PDF en la carpeta "uploads"
+    filename = secure_filename(pdf_file.filename)
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    pdf_file.save(filepath)
+    
+    # Guardar el registro del PDF en la base de datos si es necesario
+    # ...
+    #guardar Id del usuario que subio el pdf
+    id_user = ObjectId(session.get('user_id'))
+    # nombre del pdf
+    pdf_name = request.form.get('pdf_name')
+    # ruta del pdf
+    pdf_path = filepath
+    # guardar en la base de datos
+    
+    pdf_data = {
+        'id_user': id_user,
+        'pdf_name': pdf_name,
+        'pdf_path': pdf_path
+    }
+    
+    pdf_collection.insert_one(pdf_data)
+    
+    return jsonify({'message': 'PDF uploaded successfully'}), 200
+
+@app.route('/pdfs/<filename>')
+def download_pdf(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+@app.route('/assign_role', methods=['POST'])
+@admin_required
+def assign_role():
+    user_id_str = request.form.get('user_id')
+    role = request.form.get('role')
+    
+    try:
+        user_id = ObjectId(user_id_str)
+    except:
+        return jsonify({'message': 'Invalid user_id format'}), 400
+    
+    # Verificar si el usuario existe en la base de datos
+    user = user_collection.find_one({'_id': user_id})
+    if user:
+        # Actualizar el rol del usuario
+        user_collection.update_one({'_id': user_id}, {'$set': {'role': role}})
+        return jsonify({'message': 'Role assigned successfully'}), 200
+    else:
+        return jsonify({'message': 'User not found'}), 404
+
+
 # =================================================== Rutas Html ==================================================
 # index
 @app.route("/")
@@ -355,6 +425,18 @@ def registrar():
 @app.route("/recuperaContraseña")
 def recuperar():
     return render_template("recuperaContraseña.html")
+
+@app.route('/admin/dashboard')
+@admin_required
+def admin_dashboard():
+    # Vista del panel de administración
+    users = user_collection.find()
+    return render_template('admin_dashboard.html', users=users)
+
+@app.route('/access-denied')
+def access_denied():
+    return render_template('access_denied.html')
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=2000)
