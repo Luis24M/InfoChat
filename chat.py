@@ -1,3 +1,5 @@
+from datetime import datetime
+import json
 from flask import Flask, redirect, render_template, request, jsonify, Response, session, url_for, send_from_directory
 from flask_login import current_user
 from functools import wraps
@@ -277,19 +279,28 @@ def chat():
 # Recibir comentarios
 @app.route('/comments', methods=['POST'])
 def create_comment():
-    name = session.get('username')  # Obtener el nombre del usuario de la sesión
-    email = session.get('email')  # Obtener el correo electrónico del usuario de la sesión
-    comment = request.json['comment']
+    id_usuario = session.get('user_id')  # Obtener el ID de usuario de la sesión
+    comment = request.form['comment']
+    category = request.form['category']
     estado = 'pending'
-    if name and email and comment:
+    fecha = datetime.datetime.now() # Obtener la fecha y hora actual
+    
+    if id_usuario and comment:
         comment_data = {
-            'name': name,
-            'email': email,
+            'Id_usuario': id_usuario,
             'comment': comment,
-            'status': estado
+            'category': category,
+            'status': estado,
+            'fecha': fecha
         }
         
         comment_id = db.comments.insert_one(comment_data).inserted_id
+        
+        # obtener el nombre y el correo electrónico del usuario
+        user = user_collection.find_one({'_id': ObjectId(id_usuario)})
+        name = user['username']
+        email = user['email']
+        
         
         msg = Message('Gracias por tu Feedback', 
                       sender=('InfoChat','InfoChat@support.com'), 
@@ -312,14 +323,62 @@ El equipo de InfoChat'''
             'status': estado
         }
         
-        return jsonify(response)
+        # mostrar un alert y recargar la pagina
+        return render_template('contact.html', alert='Gracias por tu Feedback')        
     else:
         return jsonify({'message': 'Invalid data'})
+
+# Ruta para eliminar un comentario
+@app.route('/delete_comment', methods=['DELETE'])
+@admin_required  # Solo los administradores pueden eliminar comentarios
+def delete_comment():
+    comment_id = request.args.get('commentId')
+    
+    # Verificar si el comentario existe en la base de datos
+    comment = db.comments.find_one({'_id': ObjectId(comment_id)})
+    if comment:
+        # Eliminar el comentario de la base de datos
+        db.comments.delete_one({'_id': ObjectId(comment_id)})
+        return jsonify({'message': 'Comment deleted successfully'}), 200
+    else:
+        return jsonify({'message': 'Comment not found'}), 404
 
 # =================================================================================================================
 
 
-# =================================================== PDF =========================================================
+# =================================================== DashBoard =========================================================
+# Ruta para cambiar el rol de un usuario
+@app.route('/update_user_role', methods=['POST'])
+@admin_required
+def update_user_role():
+    user_id = request.json.get('userId')
+    role = request.json.get('role')
+    
+    # Verificar si el usuario existe en la base de datos
+    user = user_collection.find_one({'_id': ObjectId(user_id)})
+    if user:
+        # Actualizar el rol del usuario
+        user_collection.update_one({'_id': ObjectId(user_id)}, {'$set': {'role': role}})
+        session['role'] = role
+        return jsonify({'message': 'Role updated successfully'}), 200
+    else:
+        return jsonify({'message': 'User not found'}), 404
+
+# Ruta para eliminar un usuario
+@app.route('/delete_user', methods=['DELETE'])
+@admin_required
+def delete_user():
+    user_id = request.args.get('userId')
+    
+    # Verificar si el usuario existe en la base de datos
+    user = user_collection.find_one({'_id': ObjectId(user_id)})
+    if user:
+        # Eliminar el usuario
+        user_collection.delete_one({'_id': ObjectId(user_id)})
+        return jsonify({'message': 'User deleted successfully'}), 200
+    else:
+        return jsonify({'message': 'User not found'}), 404
+
 # Ruta para subir PDFs
 @app.route('/upload_pdf', methods=['POST'])
 @admin_required
@@ -360,25 +419,78 @@ def upload_pdf():
 def download_pdf(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-@app.route('/assign_role', methods=['POST'])
+
+
+
+@app.route('/update_comment_status', methods=['POST'])
+@admin_required  # Solo los administradores pueden actualizar el estado de los comentarios
+def update_comment_status():
+    data = request.get_json()
+    comment_id = data.get('commentId')
+    status = data.get('status')
+    
+    # Verificar si el comentario existe en la base de datos
+    comment = db.comments.find_one({'_id': ObjectId(comment_id)})
+    if comment:
+        # Actualizar el estado del comentario
+        db.comments.update_one({'_id': ObjectId(comment_id)}, {'$set': {'status': status}})
+        return jsonify({'message': 'Comment status updated successfully'}), 200
+    else:
+        return jsonify({'message': 'Comment not found'}), 404
+
+
+@app.route('/update_comment_category', methods=['POST'])
+@admin_required  # Solo los administradores pueden actualizar la categoría de los comentarios
+def update_comment_category():
+    data = request.get_json()
+    comment_id = data.get('commentId')
+    category = data.get('category')
+
+    # Verificar si el comentario existe en la base de datos
+    comment = db.comments.find_one({'_id': ObjectId(comment_id)})
+    if comment:
+        # Actualizar la categoría del comentario
+        db.comments.update_one({'_id': ObjectId(comment_id)}, {'$set': {'category': category}})
+        return jsonify({'message': 'Comment category updated successfully'}), 200
+    else:
+        return jsonify({'message': 'Comment not found'}), 404
+
+
+# =================================================== Reportes =================================================
+# reportar usuarios
+
+@app.route('/report_users', methods=['GET'])
 @admin_required
-def assign_role():
-    user_id_str = request.form.get('user_id')
-    role = request.form.get('role')
+def report_users():
+    users = user_collection.find()
+    return render_template('report_users.html', users=users)
+
+@app.route('/report_pdfs', methods=['GET'])
+@admin_required
+def report_pdfs():
+    pdfs = pdf_collection.find()
+    return render_template('report_pdfs.html', pdfs=pdfs, get_filename_from_path=get_filename_from_path, get_username=get_username)
+
+def get_filename_from_path(path):
+    return os.path.basename(path)
+
+
+def get_username(user_id):
     
-    try:
-        user_id = ObjectId(user_id_str)
-    except:
-        return jsonify({'message': 'Invalid user_id format'}), 400
-    
-    # Verificar si el usuario existe en la base de datos
+    user_id = ObjectId(user_id)
     user = user_collection.find_one({'_id': user_id})
     if user:
-        # Actualizar el rol del usuario
-        user_collection.update_one({'_id': user_id}, {'$set': {'role': role}})
-        return jsonify({'message': 'Role assigned successfully'}), 200
-    else:
-        return jsonify({'message': 'User not found'}), 404
+        return user['username']
+    return 'Usuario desconocido'
+
+@app.route('/report_comments', methods=['GET'])
+@admin_required
+def report_comments():
+    comments = db.comments.find()
+    return render_template('report_comments.html', comments=comments, get_username=get_username)
+
+# =================================================== Contacto =================================================
+
 
 
 # =================================================== Rutas Html ==================================================
@@ -429,13 +541,28 @@ def recuperar():
 @app.route('/admin/dashboard')
 @admin_required
 def admin_dashboard():
-    # Vista del panel de administración
-    users = user_collection.find()
-    return render_template('admin_dashboard.html', users=users)
+    # Grafica de barras
+    #labels: Categotias de los comentarios
+    #data: Cantidad de comentarios por categoría
+    labels = []
+    data = []
+    for comment in db.comments.find():
+        if comment['category'] not in labels:
+            labels.append(comment['category'])
+            data.append(0)
+        data[labels.index(comment['category'])] += 1
+         
+    
+    latest_users = list(user_collection.find().sort('_id', -1).limit(3))
+    latest_pdfs = list(pdf_collection.find().sort('_id', -1).limit(3))
+    latest_comments = list(db.comments.find({"status": "pending"}).sort('_id', -1).limit(3))
+    
+    return render_template('admin_dashboard.html', latest_users=latest_users, latest_pdfs=latest_pdfs, latest_comments=latest_comments, labels=json.dumps(labels), data=json.dumps(data), get_username=get_username, get_filename_from_path=get_filename_from_path)
 
 @app.route('/access-denied')
 def access_denied():
     return render_template('access_denied.html')
+
 
 
 if __name__ == "__main__":

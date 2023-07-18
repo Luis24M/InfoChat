@@ -1,0 +1,109 @@
+.container {
+    width: 90%;
+    margin-top: 50px;
+    margin-left: 170px;
+    /* height: 80vh; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.container h1 {
+    /* esta dentro de un flex, lo quiero a la izquierda y arriba */
+    align-self: flex-start;
+    margin-bottom: 20px;
+    font-size: 40px;
+    font-weight: bold;
+    
+}
+
+.container h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px;
+}
+
+.container th,
+.container td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.container th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.container button {
+    padding: 5px 10px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 3px;
+}
+
+.container button:hover {
+    background-color: #c82333;
+}
+
+.container .filters {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.container .filters label {
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+.container .filters select,
+.container .filters input[type="date"] {
+    margin-right: 10px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.container .filters button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 3px;
+}
+
+.container .filters button:hover {
+    background-color: #c82333;
+}
+
+#search-input{
+    width: 200px;
+    margin-right: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#category-filter, #status-filter{
+    width: 150px;
+}
+
+.container tr{
+    background-color: #ffffff9d;
+    border-radius: 20px;
+    box-shadow: 1px 1px 1px #000000;
+}

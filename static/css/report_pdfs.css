@@ -1,0 +1,36 @@
+.pdf-report {
+    margin: 40px 170px;
+}
+
+.pdf-report h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.pdf-report table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 15px;
+    margin: 15px;
+}
+
+.pdf-report th, .pdf-report td {
+    padding: 8px;
+    /* border: 1px solid #ccc; */
+}
+
+.pdf-report th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    text-align: left;
+    /* border-radius: 10px; */
+}
+
+.pdf-report a {
+    color: #0645AD;
+    text-decoration: none;
+}
+
+.pdf-report a:hover {
+    text-decoration: underline;
+}

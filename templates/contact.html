@@ -7,11 +7,29 @@
     <main>
         <h1>Contacto</h1>
         <section>
-            <ul class="contact">
-                <li><i class="fas fa-envelope"></i>  infochatunt@gmail.com</li>
-                <li><i class="fas fa-phone"></i>  +1234567890</li>
-                <li><i class="fas fa-map-marker-alt"></i>  Av. Juan Pablo Ii S/n - Universidad Nacional De Trujillo, Trujillo, La Libertad Region 13001</li>
-            </ul>
+            <form id="comment-form" action="/comments" method="post">
+                <div class="info" id="help">
+                    <p>Por favor, selecciona una categoría que describa tu consulta o comentario:</p>
+                    <ul>
+                        <li><strong>Error:</strong> Informa sobre cualquier error o problema que hayas encontrado en la plataforma.</li>
+                        <li><strong>Comentario:</strong> Comparte tus comentarios generales o sugerencias sobre la plataforma.</li>
+                        <li><strong>Reseña:</strong> Proporciona una reseña o testimonio sobre tu experiencia con la plataforma.</li>
+                        <li><strong>Actualización:</strong> Solicita información o actualizaciones sobre la plataforma.</li>
+                    </ul>
+                </div>
+                
+                <br>
+                <label for="category">Categoría:</label>
+                <select id="disabledSelect" class="form-select" name="category">
+                    <option value="error">Error</option>
+                    <option value="comentario">Comentario</option>
+                    <option value="reseña">Reseña</option>
+                    <option value="actualización">Actualización</option>
+                </select>
+                
+                <textarea id="comment-input" name="comment" rows="4" placeholder="Escribe tu queja o comentario aquí"></textarea>
+                <button type="submit" value="Enviar">Enviar</button>
+            </form>
         </section>
     </main>
 {% endblock %}

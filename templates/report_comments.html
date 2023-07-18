@@ -1,0 +1,169 @@
+{% extends 'inicio.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="/static/css/report_comments.css" />
+
+<div class="container">
+    <h1>Reporte de Comentarios</h1>
+
+    <div class="filters">
+        <label for="search-input">Búsqueda:</label>
+        <input type="text" id="search-input" oninput="applyFilters()" placeholder="Buscar comentarios">
+
+        <label for="status-filter">Filtrar por Estado:</label>
+        <select id="status-filter" class="form-select" onchange="applyFilters()">
+            <option value="">Todos</option>
+            <option value="pending">Pendiente</option>
+            <option value="process">Proceso</option>
+            <option value="completed">Completo</option>
+        </select>
+
+        <label for="category-filter">Filtrar por Categoría:</label>
+        <select id="category-filter" class="form-select" onchange="applyFilters()">
+            <option value="">Todos</option>
+            <option value="error">Error</option>
+            <option value="comentario">Comentario</option>
+            <option value="reseña">Reseña</option>
+            <option value="actualizacion">Actualización</option>
+        </select>
+
+        <label for="date-filter">Filtrar por Fecha:</label>
+        <input type="date" id="date-filter" onchange="applyFilters()">
+
+        <button onclick="clearFilters()">Limpiar Filtros</button>
+    </div>
+
+    <table id="comments-table">
+        <thead>
+            <tr>
+                <th>Comentario</th>
+                <th>Usuario</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Categoría</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for comment in comments %}
+            <tr class="comment-row" data-status="{{ comment.status }}" data-category="{{ comment.category }}" data-date="{{ comment.fecha }}">
+                <td>{{ comment.comment }}</td>
+                <td>{{ get_username(comment.Id_usuario) }}</td>
+                <td>{{ comment.fecha }}</td>
+                <td>
+                    <select class="form-select" onchange="updateCommentStatus('{{ comment._id }}', this.value)">
+                        <option value="pending" {% if comment.status == 'pending' %}selected{% endif %}>Pendiente</option>
+                        <option value="process" {% if comment.status == 'process' %}selected{% endif %}>Proceso</option>
+                        <option value="completed" {% if comment.status == 'completed' %}selected{% endif %}>Completo</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="form-select" onchange="updateCommentCategory('{{ comment._id }}', this.value)">
+                        <option value="error" {% if comment.category == 'error' %}selected{% endif %}>Error</option>
+                        <option value="comentario" {% if comment.category == 'comentario' %}selected{% endif %}>Comentario</option>
+                        <option value="reseña" {% if comment.category == 'reseña' %}selected{% endif %}>Reseña</option>
+                        <option value="actualizacion" {% if comment.category == 'actualizacion' %}selected{% endif %}>Actualización</option>
+                    </select>
+                </td>
+                <td>
+                    <button onclick="deleteComment('{{ comment._id }}')">Eliminar</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Funciones JavaScript para actualizar y eliminar comentarios -->
+<script>
+    function updateCommentStatus(commentId, status) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/update_comment_status", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                // Actualizar la fila de la tabla con el nuevo estado
+                var row = document.querySelector(`tr[data-comment-id="${commentId}"]`);
+                if (row) {
+                    row.querySelector(".status-cell").innerText = status;
+                }
+                window.location.reload();
+            }
+        };
+        var data = JSON.stringify({ commentId: commentId, status: status });
+        xhr.send(data);
+    }
+
+    function updateCommentCategory(commentId, category) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/update_comment_category", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                // Actualizar la fila de la tabla con la nueva categoría
+                var row = document.querySelector(`tr[data-comment-id="${commentId}"]`);
+                if (row) {
+                    row.querySelector(".category-cell").innerText = category;
+                }
+                window.location.reload();
+            }
+        };
+        var data = JSON.stringify({ commentId: commentId, category: category });
+        xhr.send(data);
+    }
+
+    function deleteComment(commentId) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("DELETE", "/delete_comment?commentId=" + commentId, true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                // Eliminar la fila de la tabla correspondiente al comentario eliminado
+                var row = document.querySelector(`tr[data-comment-id="${commentId}"]`);
+                if (row) {
+                    row.parentNode.removeChild(row);
+                }
+                window.location.reload();
+            }
+        };
+        xhr.send();
+    }
+
+    function applyFilters() {
+        var searchInput = document.getElementById('search-input').value.toLowerCase();
+        var statusFilter = document.getElementById('status-filter').value;
+        var categoryFilter = document.getElementById('category-filter').value;
+        var dateFilter = document.getElementById('date-filter').value;
+
+        var rows = document.getElementsByClassName('comment-row');
+
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            var comment = row.querySelector('td:first-child').innerText.toLowerCase();
+            var status = row.getAttribute('data-status');
+            var category = row.getAttribute('data-category');
+            var date = row.getAttribute('data-date');
+
+            var searchMatch = comment.includes(searchInput);
+            var statusMatch = statusFilter === '' || status === statusFilter;
+            var categoryMatch = categoryFilter === '' || category === categoryFilter;
+            var dateMatch = dateFilter === '' || date === dateFilter;
+
+            if (searchMatch && statusMatch && categoryMatch && dateMatch) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    }
+
+    function clearFilters() {
+        document.getElementById('search-input').value = '';
+        document.getElementById('status-filter').value = '';
+        document.getElementById('category-filter').value = '';
+        document.getElementById('date-filter').value = '';
+
+        applyFilters();
+    }
+</script>
+
+{% endblock %}

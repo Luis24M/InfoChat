@@ -17,7 +17,8 @@ section h2 {
   font-size: 24px;
   margin-bottom: 10px;
 }
-section h3 {
+section h3 , .info h3  {
+  font-size: 18px;
   margin-bottom: 10px;
   padding-left: 3%;
 }
@@ -38,7 +39,7 @@ section form textarea {
   border: 1px solid #ccc;
   border-radius: 5px;
   resize: vertical;
-  margin-bottom: 10px;
+  /* margin: 10px; */
 }
 
 section form input[type="text"],
@@ -51,17 +52,19 @@ section form input[type="email"] {
 }
 
 section form button[type="submit"] {
-  background-color: #007bff;
+  background-color: #4caf5c;
   color: #fff;
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
+  width: 100%;
+  margin: 10px 0px;
 }
 
 section form button[type="submit"]:hover {
-  background-color: #0069d9;
+  background-color: #45a049;
 }
 
 section ul {
@@ -72,13 +75,42 @@ section ul {
   padding-left: 10%;
   margin-bottom: 10px;
 }
-.contact{
-    list-style-type: none;
-}
+
 section ul li {
   margin-bottom: 10px;
 }
 
 section ul li i {
   margin-right: 10px;
+}
+
+#category {
+  padding: 10px;
+  /* border: 1px solid #45a049; */
+  border-radius: 5px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.info{
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.864);
+  border-radius: 15px;
+  margin: 15px;
+}
+
+/* Cambiar el estilo de los select */
+select {
+  width: 30%;
+  padding: 10px;
+  border: 1px solid #000000;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  margin-top: 5px;
+}
+
+#help li{
+  list-style: none;
 }

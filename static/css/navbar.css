@@ -29,20 +29,29 @@ header {
 
 nav {
   position: fixed;
-  top: 0;
-  bottom: 0;
+  top: auto;
+  bottom: 10px;
   left: 0;
   background: #fff; /* Establecer el color de fondo de la barra de navegación */
   width: 90px;
   overflow: hidden;
   box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
   transition: all 0.5s ease;
+  border-radius: 20px;
+  height: 95%;
+  margin: 15px;
 }
 
-ul {
+nav ul {
+  padding-left: 0;
   position: absolute;
   top: 10px;
   width: 100%;
+  /* quitar los puntos de la lista */
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .logo {
@@ -77,6 +86,8 @@ a {
   display: table;
   width: 300px;
   padding: 10px;
+  text-decoration: none;
+  box-decoration-break: none;
 }
 
 .fas {
@@ -102,6 +113,16 @@ a {
   margin-left: 10px;
 }
 
+.items{
+  height: 300px;
+  top: 0;
+  /* ordenar items de manera vertical centrados con separacion */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  border-radius: 10px;
+}
+
 a:hover {
   background: #eee;
 }
@@ -109,31 +130,4 @@ a:hover {
 nav:hover {
   width: 280px;
   transition: all 0.5s ease;
-}
-
-/* Estilos para dispositivos móviles */
-@media only screen and (max-width: 768px) {
-  nav {
-    width: 70px;
-  }
-
-  .logo span {
-    display: none;
-  }
-
-  .nav-item {
-    display: none;
-  }
-
-  .fas {
-    width: 70px;
-  }
-
-  nav:hover {
-    width: 70px;
-  }
-
-  nav:hover .nav-item {
-    display: block;
-  }
 }

@@ -1,0 +1,110 @@
+{% extends 'inicio.html' %}
+
+{% block content %}
+
+<link rel="stylesheet" href="/static/css/report_users.css">
+
+<div class="report-users-section">
+  <h2>Reporte de Usuarios</h2>
+
+  <div class="filters">
+    <label for="search-input">Búsqueda:</label>
+    <input type="text" id="search-input" oninput="applyFilters()" placeholder="Buscar usuarios">
+
+    <label for="role-filter">Filtrar por Rol:</label>
+    <select id="role-filter" class="form-select" onchange="applyFilters()">
+      <option value="">Todos</option>
+      <option value="admin">Administrador</option>
+      <option value="user">Usuario</option>
+    </select>
+  </div>
+
+  <table id="users-table">
+    <thead>
+      <tr>
+        <th>Nombre de usuario</th>
+        <th>Email</th>
+        <th>Rol</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr class="user-row" data-role="{{ user.role }}">
+        <td>{{ user.username }}</td>
+        <td>{{ user.email }}</td>
+        <td>
+          <select class="form-select" onchange="updateUserRole('{{ user._id }}', this.value)">
+            <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Administrador</option>
+            <option value="user" {% if user.role == 'user' %}selected{% endif %}>Usuario</option>
+          </select>
+        </td>
+        <td>
+          <button onclick="deleteUser('{{ user._id }}')">Eliminar</button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Funciones JavaScript para actualizar y eliminar usuarios -->
+<script>
+  function updateUserRole(userId, role) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/update_user_role", true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        // Actualizar la fila de la tabla con el nuevo rol
+        var row = document.querySelector(`tr[data-user-id="${userId}"]`);
+        if (row) {
+          row.querySelector("td:nth-child(3)").innerText = role;
+        }
+        window.location.reload();
+      }
+    };
+    var data = JSON.stringify({ userId: userId, role: role });
+    xhr.send(data);
+  }
+
+  function deleteUser(userId) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("DELETE", "/delete_user?userId=" + userId, true);
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        // Eliminar la fila de la tabla correspondiente al usuario eliminado
+        var row = document.querySelector(`tr[data-user-id="${userId}"]`);
+        if (row) {
+          row.parentNode.removeChild(row);
+        }
+        window.location.reload();
+      }
+    };
+    xhr.send();
+  }
+
+  function applyFilters() {
+    var searchInput = document.getElementById("search-input").value.toLowerCase();
+    var roleFilter = document.getElementById("role-filter").value;
+
+    var rows = document.getElementsByClassName("user-row");
+
+    for (var i = 0; i < rows.length; i++) {
+      var row = rows[i];
+      var username = row.querySelector("td:first-child").innerText.toLowerCase();
+      var role = row.getAttribute("data-role");
+
+      var searchMatch = username.includes(searchInput);
+      var roleMatch = roleFilter === "" || role === roleFilter;
+
+      if (searchMatch && roleMatch) {
+        row.style.display = "";
+      } else {
+        row.style.display = "none";
+      }
+    }
+  }
+</script>
+
+{% endblock %}

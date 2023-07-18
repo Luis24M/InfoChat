@@ -1,0 +1,30 @@
+{% extends 'inicio.html' %}
+
+{% block content %}
+
+<link rel="stylesheet" href="/static/css/report_pdfs.css">
+
+<div class="pdf-report">
+    <h2>Reporte de PDFs</h2>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre del PDF</th>
+                <th>Usuario</th>
+                <th>Descargar</th>
+            </tr>
+        </thead> 
+        <tbody>
+            {% for pdf in pdfs %}
+                <tr>
+                    <td>{{ pdf.pdf_name }}</td>
+                    <td>{{ get_username(pdf.id_user) }}</td>
+                    <td><a href="{{ url_for('download_pdf', filename= get_filename_from_path(pdf.pdf_path)) }}">Vista previa 🫣</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

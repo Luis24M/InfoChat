@@ -12,7 +12,7 @@ main {
   padding: 10px;
   margin-top: 20px;
   background-color: #f5f5f5;
-  border-radius: 5px;
+  border-radius: 15px;
 }
 #chat-log {
   height: 93%;

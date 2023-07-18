@@ -13,11 +13,14 @@
 }
 
 .admin-section form {
-    margin-bottom: 20px;
+    width: 50%;
+    margin: 10px;
 }
 
 .admin-section input[type="file"] {
     margin-bottom: 10px;
+    height: 30px;
+    border-radius: 5px;
 }
 
 .admin-section select {
@@ -31,6 +34,8 @@
     border: none;
     cursor: pointer;
     font-size: 14px;
+    border-radius: 10px;
+    box-shadow: 1px 1px 3px #1c1c1c9c;
 }
 
 .admin-section button:hover {
@@ -38,6 +43,104 @@
 }
 
 .pdf-name{
-    width: 100%;
-    margin: 20px;
+    /* width: 100%; */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    background-color: rgb(251, 251, 251);
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 1px 1px 3px #4b4b4b9c;
 }
+
+.pdf-name input{
+    margin: 10px 0;
+    box-shadow: 1px 1px 3px #4b4b4b9c;
+}
+/* 
+#pdf-name {
+    width: 60%;
+    height: 25px;
+    margin-left: 5px;
+    border: #45a049 1px solid;
+} */
+
+section{
+    margin: 30px;
+}
+
+.cards{
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    background-color: rgb(251, 251, 251);
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 1px 1px 3px #4b4b4b9c;
+    margin: 8px;
+}
+
+.latest{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin: 10px;
+}
+
+.usuarios .cards{
+    width: 100%;
+}
+
+.card {
+    position: initial;
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    background-color: #f2f2f2;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 15px;
+  }
+  
+  .card h4 {
+    font-size: 18px;
+    margin-bottom: 5px;
+  }
+  
+  .card p {
+    font-size: 14px;
+    margin: 3px;
+  }
+  
+  .pdfs-cards{
+    display: flex;
+    flex-direction: row;
+  }
+
+  /* .pdfs .cards{
+    width: 50%;
+  } */
+
+  .chart-canvas{
+    width: 40%;
+  }
+
+  .comentarios .cards{
+    justify-content: center;
+  }
+
+  .comentarios .latest{
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .comentarios .card{
+    
+    justify-content: space-around;
+    width: 100%;
+  }
+  
+  .pdfs a{
+    width: 100%;
+  }

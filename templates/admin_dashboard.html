@@ -3,41 +3,151 @@
 {% block content %}
 <link rel="stylesheet" href="/static/css/admin_dashboard.css">
 <link rel="icon" href="/static/images/icono2.png" type="image/x-icon" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 
 <div class="admin-section">
-    <h2>Administración</h2>
-    
-    <h3>Subir PDFs</h3>
-    <form action="{{ url_for('upload_pdf') }}" method="post" enctype="multipart/form-data">
-        <div class="pdf-name">
-            <label for="pdf-name">Nombre del PDF: </label>
-            <input type="text" name="pdf_name" id="pdf-name" required>
-        </div>
-        <input type="file" name="pdf_file" accept=".pdf" required>
-        <button type="submit">Subir</button>
-        
-    </form>
-    <form action="{{ url_for('reload_chatbot') }}" method="post">
-        <button type="submit">Recargar Chatbot</button>
-    </form>
-    
-    <h3>Asignar Roles a Usuarios</h3>
-    <form action="{{ url_for('assign_role') }}" method="post">
-        <select name="user_id" required>
-            {% for user in users %}
-            <option value="{{ user._id }}">{{ user.username }}</option>
-            {% endfor %}
-        </select>
-        
-        <select name="role" required>
-            <option value="admin">Administrador</option>
-            <option value="user">Usuario</option>
-        </select>
-        
-        <button type="submit">Asignar Rol</button>
-    </form>
-    <h3>Gestionar PDFs</h3>
+    <h1>Administración</h1>
+    <section class="content-admin">
+        <h2 class="subtitulos">Usuarios</h2>
+        <section class="usuarios">
+            <div class="cards">
+                <h3>New users</h3>
+                <section class="latest">
+                    {% for user in latest_users %}
+                        <div class="card">
+                            <h4>{{ user.username }}</h4>
+                            <p>{{ user.email }}</p>
+                            <p>{{ user.role }}</p>
+                        </div>
+                    {% endfor %}
+                </section>
+            </div>
+            
+            
+            
 
-    <a href="{{ url_for('download_pdf', filename='example.pdf') }}">Descargar PDF</a>
+            <form action="{{ url_for('report_users') }}" method="get">
+                <button type="submit">Reporte Usuarios</button>
+            </form>
+        </section>
+        <h2 class="subtitulos">PDFs</h2>
+        <section class="pdfs">
+            <div class="pdfs-cards">
+                <div class="cards">
+                <h3>New PDFs</h3>
+                <section class="latest">
+                    {% for pdf in latest_pdfs %}
+                        <div class="card">
+                            <!-- link a una nueva pestaña -->
+
+                            <a href="{{ url_for('download_pdf', filename= get_filename_from_path(pdf.pdf_path)) }}" target="_blank">
+                                <h4>{{ pdf.pdf_name }}</h4>
+                                <p>{{ get_username(pdf.id_user)}}</p>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </section>
+            </div>
+            <form action="{{ url_for('upload_pdf') }}" method="post" enctype="multipart/form-data">
+                <div class="pdf-name">
+                    <h3>Subir PDFs</h3>
+                    <label for="pdf-name">Nombre del PDF: </label>
+                    <input type="text" name="pdf_name" class="form-control" id="pdf-name" required>
+                
+                    <input type="file" name="pdf_file" class="form-control" id="formFileDisabled" accept=".pdf" required>
+                    <button type="submit">Subir</button>
+                </div>
+            </form>
+            </div>
+            
+            <form action="{{ url_for('report_pdfs') }}" method="get">
+                <button type="submit">Reporte PDFs</button>
+            </form>
+        </section>
+        <h2 class="subtitulos">Comentarios</h2>
+        <section class="comentarios">
+            <div class="pdfs-cards">
+                <div class="cards">
+                    <h3>Últimos comentarios pendientes</h3>
+                    <section class="latest">
+                        {% for comment in latest_comments %}
+                            <div class="card">
+                                <h4>{{ comment.comment }}</h4>
+                                <p>{{ get_username(comment.Id_usuario) }}</p>
+                            </div>
+                        {% endfor %}
+                    </section>
+                </div>
+                <div class="chart-canvas">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+            
+            
+            <form action="{{ url_for('report_comments') }}" method="get">
+                <button type="submit">Reporte Comentarios</button>
+            </form>
+        </section>
+    </section>
+    
 </div>
+<script>
+// Obtener los datos desde Flask
+var labels = {{ labels|safe }};
+var data = {{ data|safe }};
+
+// Calcular el total de datos
+var total = data.reduce((a, b) => a + b, 0);
+
+// Calcular los porcentajes
+var percentages = data.map(value => ((value / total) * 100).toFixed(2) + '%');
+
+// Crear el gráfico de torta con Chart.js
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+    labels: labels,
+    datasets: [{
+        label: 'Datos de ejemplo',
+        data: data,
+        backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)'
+        ],
+        borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)'
+        ],
+        borderWidth: 1
+    }]
+    },
+    options: {
+        plugins: {
+            datalabels: {
+                formatter: (value, ctx) => {
+                    let percentage = percentages[ctx.dataIndex] || '';
+                    return value + ' (' + percentage + ')';
+                },
+                color: '#000',
+                font: {
+                    weight: 'bold'
+                }
+            },
+            title: {
+                display: true,
+                text: 'Comentarios - Total: ' + total
+            }
+        }
+    }
+});
+    </script>
+    
 {% endblock %}
